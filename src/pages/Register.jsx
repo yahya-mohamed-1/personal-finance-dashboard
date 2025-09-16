@@ -16,6 +16,7 @@ function Register() {
       buttonText="Register"
       fields={[
         { label: "Name", type: "text", placeholder: "John Doe" },
+        { label: "Username", type: "text", placeholder: "johndoe" },
         { label: "Email", type: "email", placeholder: "you@example.com" },
         { label: "Password", type: "password", placeholder: "••••••••" },
       ]}

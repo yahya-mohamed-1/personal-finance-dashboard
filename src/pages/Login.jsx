@@ -16,12 +16,15 @@ function Login() {
       title="Welcome Back 👋"
       buttonText="Login"
       fields={[
-        { label: "Email", type: "email", placeholder: "you@example.com" },
+        { label: "Username", type: "text", placeholder: "johndoe" },
         { label: "Password", type: "password", placeholder: "••••••••" },
       ]}
       footerText="Don't have an account?"
       footerLink="/register"
       footerLinkText="Register"
+      footerText2="Forgot your password?"
+      footerLink2="/reset-password"
+      footerLinkText2="Reset Password"
       onSubmit={handleLogin}
     />
   );

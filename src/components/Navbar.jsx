@@ -36,9 +36,7 @@ function Navbar() {
             <Link to="/register" className="hover:text-gray-200 dark:hover:text-gray-300">
               Register
             </Link>
-            <Link to="/reset-password" className="hover:text-gray-200 dark:hover:text-gray-300">
-              Reset Password
-            </Link>
+            {/* Removed Reset Password link */}
 
             {/* Light/Dark toggle for desktop */}
             <button
@@ -188,13 +186,7 @@ function Navbar() {
           >
             Register
           </Link>
-          <Link
-            to="/reset-password"
-            className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
-            onClick={() => setIsOpen(false)}
-          >
-            Reset Password
-          </Link>
+          {/* Removed Reset Password link */}
         </div>
       )}
     </nav>

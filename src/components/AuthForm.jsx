@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
  * A simple, reusable authentication form
  * Props let us control title, button text, fields, and navigation link.
  */
-function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLinkText, onSubmit }) {
+function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLinkText, footerText2, footerLink2, footerLinkText2, onSubmit }) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
@@ -47,6 +47,14 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
             {footerText}{" "}
             <Link to={footerLink} className="text-blue-600 dark:text-blue-400 hover:underline">
               {footerLinkText}
+            </Link>
+          </p>
+        )}
+        {footerText2 && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 text-center">
+            {footerText2}{" "}
+            <Link to={footerLink2} className="text-blue-600 dark:text-blue-400 hover:underline">
+              {footerLinkText2}
             </Link>
           </p>
         )}
