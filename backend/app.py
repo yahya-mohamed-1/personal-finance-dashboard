@@ -13,7 +13,9 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
+    # Allow any localhost origin (any port) during development using a regex.
+    # This keeps supports_credentials=True while not restricting to specific dev ports.
+    CORS(app, origins=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$", supports_credentials=True)
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)

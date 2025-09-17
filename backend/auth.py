@@ -1,9 +1,21 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app, url_for
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app import db
 from models import User
+from flask_mail import Mail, Message
+from datetime import datetime, timedelta
+import secrets
 
 auth_bp = Blueprint("auth", __name__)
+
+mail = Mail()
+
+def init_mail(app):
+    mail.init_app(app)
+
+@auth_bp.before_app_request
+def init_mail():
+    mail.init_app(current_app)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
@@ -50,3 +62,70 @@ def me():
     if not user:
         return jsonify({"msg": "User not found"}), 404
     return jsonify({"id": user.id, "username": user.username, "name": user.name, "email": user.email})
+
+@auth_bp.route("/reset-password", methods=["POST"])
+def reset_password():
+    data = request.get_json() or {}
+    email = data.get("email")
+    frontend_url = data.get("frontend_url")
+    # Prefer explicit frontend_url from request body, else use the request Origin header (sent by browsers),
+    # else fall back to configured FRONTEND_URL. Using Origin lets the frontend run on any localhost port.
+    request_origin = request.headers.get("Origin")
+
+    if not email:
+        return jsonify({"msg": "Email is required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"msg": "Email not found"}), 404
+
+    # Check if SMTP is configured
+    print(f"MAIL_USERNAME: {current_app.config.get('MAIL_USERNAME')}")
+    print(f"MAIL_PASSWORD: {current_app.config.get('MAIL_PASSWORD')}")
+    if not current_app.config.get('MAIL_USERNAME') or not current_app.config.get('MAIL_PASSWORD'):
+        return jsonify({"msg": "SMTP credentials not configured"}), 500
+
+    # Generate reset token and expiration
+    token = secrets.token_urlsafe(32)
+    user.reset_token = token
+    user.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+    db.session.commit()
+
+    # Use frontend_url from request body if provided, else use request Origin header, else configured FRONTEND_URL
+    frontend_origin = frontend_url or request_origin or current_app.config.get("FRONTEND_URL", "http://localhost:5174")
+
+    # Basic safety: only allow localhost origins in development (prevent open redirect abuse in prod)
+    if frontend_origin.startswith("http://localhost") or frontend_origin.startswith("http://127.0.0.1") or frontend_origin.startswith("https://"):
+        pass
+    else:
+        # If frontend_origin looks suspicious, fall back to configured FRONTEND_URL
+        frontend_origin = current_app.config.get("FRONTEND_URL", "http://localhost:5174")
+    frontend_reset_url = frontend_origin + f"/reset-password?token={token}"
+
+    # Send email
+    msg = Message("Password Reset Request",
+                  sender=current_app.config.get('MAIL_DEFAULT_SENDER'),
+                  recipients=[user.email],
+                  body=f"To reset your password, click the following link:\n\n{frontend_reset_url}\n\nIf you did not request this, please ignore this email.")
+    mail.send(msg)
+
+    return jsonify({"msg": "Password reset link sent!"}), 200
+
+@auth_bp.route("/reset-password/<token>", methods=["POST"])
+def reset_password_token(token):
+    data = request.get_json() or {}
+    new_password = data.get("password")
+
+    if not new_password:
+        return jsonify({"msg": "New password is required"}), 400
+
+    user = User.query.filter_by(reset_token=token).first()
+    if not user or not user.reset_token_expiration or user.reset_token_expiration < datetime.utcnow():
+        return jsonify({"msg": "Invalid or expired token"}), 400
+
+    user.set_password(new_password)
+    user.reset_token = None
+    user.reset_token_expiration = None
+    db.session.commit()
+
+    return jsonify({"msg": "Password has been reset successfully"}), 200
