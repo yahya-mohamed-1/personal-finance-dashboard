@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -13,34 +13,59 @@ import {
 } from "recharts";
 import AddTransactionModal from "../components/AddTransactionModal";
 import TransactionHistory from "../components/TransactionHistory";
-
-const initialData = [
-  { month: "Jan", income: 3000, expenses: 1800 },
-  { month: "Feb", income: 2800, expenses: 2000 },
-  { month: "Mar", income: 3500, expenses: 2200 },
-  { month: "Apr", income: 3200, expenses: 1900 },
-];
+import api from "../api"; // <-- import axios instance
 
 function Dashboard() {
-  const [data, setData] = useState(initialData);
-  const [transactions, setTransactions] = useState([]);
+  const [data, setData] = useState([]); // monthly summary
+  const [transactions, setTransactions] = useState([]); // full history
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  const handleAddTransaction = ({ amount, type, month, category }) => {
-    const newData = [...data];
-    const monthIndex = newData.findIndex((item) => item.month === month);
+  // Load data on mount
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
-    if (monthIndex !== -1) {
-      if (type === "income") {
-        newData[monthIndex].income += amount;
-      } else {
-        newData[monthIndex].expenses += amount;
-      }
+  // 🔹 Fetch all transactions from backend
+  const fetchHistory = async () => {
+    try {
+      const res = await api.get("/finance/history");
+      const txs = res.data.transactions;
+
+      // group by month for chart
+      const grouped = txs.reduce((acc, tx) => {
+        const { month, type, amount } = tx;
+        if (!acc[month]) {
+          acc[month] = { month, income: 0, expenses: 0 };
+        }
+        if (type === "income") {
+          acc[month].income += amount;
+        } else {
+          acc[month].expenses += amount;
+        }
+        return acc;
+      }, {});
+
+      setTransactions(txs);
+      setData(Object.values(grouped));
+    } catch (err) {
+      console.error("Failed to load history:", err);
     }
-    setData(newData);
+  };
 
-    setTransactions([...transactions, { amount, type, month, category }]);
+  // 🔹 Add new transaction via backend
+  const handleAddTransaction = async ({ amount, type, month, category }) => {
+    try {
+      await api.post("/finance/add", {
+        amount,
+        type,
+        month,
+        category,
+      });
+      fetchHistory(); // refresh after add
+    } catch (err) {
+      console.error("Failed to add transaction:", err);
+    }
   };
 
   return (
@@ -116,31 +141,12 @@ function Dashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
-                  <XAxis
-                    dataKey="month"
-                    stroke="#1f2937"
-                    className="dark:text-gray-100"
-                  />
+                  <XAxis dataKey="month" stroke="#1f2937" />
                   <YAxis stroke="#1f2937" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      color: "#1f2937",
-                    }}
-                  />
-                  <Legend wrapperStyle={{ color: "#1f2937" }} />
-                  <Line
-                    type="monotone"
-                    dataKey="income"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="expenses"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: "white" }} />
+                  <Legend />
+                  <Line type="monotone" dataKey="income" stroke="#3b82f6" strokeWidth={2} />
+                  <Line type="monotone" dataKey="expenses" stroke="#ef4444" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -152,19 +158,10 @@ function Dashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
-                  <XAxis
-                    dataKey="month"
-                    stroke="#1f2937"
-                    className="dark:text-gray-100"
-                  />
+                  <XAxis dataKey="month" stroke="#1f2937" />
                   <YAxis stroke="#1f2937" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      color: "#1f2937",
-                    }}
-                  />
-                  <Legend wrapperStyle={{ color: "#1f2937" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "white" }} />
+                  <Legend />
                   <Bar dataKey="income" fill="#3b82f6" />
                   <Bar dataKey="expenses" fill="#ef4444" />
                 </BarChart>

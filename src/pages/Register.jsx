@@ -1,13 +1,20 @@
 import React from "react";
 import AuthForm from "../components/AuthForm";
+import api from "../api";
 
-/**
- * Register Page
- * Users create an account with name, email, and password
- */
 function Register() {
-  const handleRegister = () => {
-    console.log("Register form submitted");
+  const handleRegister = async (formData) => {
+    try {
+      const res = await api.post("/auth/register", {
+        name: formData["Name"],
+        username: formData["Username"],
+        email: formData["Email"],
+        password: formData["Password"],
+      });
+      alert(res.data.msg || "Registered successfully!");
+    } catch (err) {
+      alert(err.response?.data?.msg || "Registration failed");
+    }
   };
 
   return (

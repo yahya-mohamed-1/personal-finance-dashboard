@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 /**
@@ -6,6 +6,20 @@ import { Link } from "react-router-dom";
  * Props let us control title, button text, fields, and navigation link.
  */
 function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLinkText, footerText2, footerLink2, footerLinkText2, onSubmit }) {
+  const [formData, setFormData] = useState({});
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit && onSubmit(formData);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
@@ -13,19 +27,16 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">{title}</h1>
 
         {/* Form */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault(); // prevent page reload
-            onSubmit && onSubmit(e); // call parent handler if passed
-          }}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map((field, idx) => (
             <div key={idx}>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-100">{field.label}</label>
               <input
+                name={field.label}
                 type={field.type}
                 placeholder={field.placeholder}
+                value={formData[field.label] || ""}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-500"
                 required
               />

@@ -1,13 +1,18 @@
 import React from "react";
 import AuthForm from "../components/AuthForm";
+import api from "../api";
 
-/**
- * Reset Password Page
- * Users enter their email to receive a reset link
- */
 function ResetPassword() {
-  const handleReset = () => {
-    console.log("Reset password request submitted");
+  const handleReset = async (formData) => {
+    try {
+      // backend not implemented yet, but this is where you'd call it
+      const res = await api.post("/auth/reset-password", {
+        email: formData["Email"],
+      });
+      alert(res.data.msg || "Password reset link sent!");
+    } catch (err) {
+      alert(err.response?.data?.msg || "Reset request failed");
+    }
   };
 
   return (

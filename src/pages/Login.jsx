@@ -1,14 +1,19 @@
 import React from "react";
 import AuthForm from "../components/AuthForm";
+import api from "../api";
 
-/**
- * Login Page
- * Users enter email + password to access their account
- */
 function Login() {
-  const handleLogin = () => {
-    // For now, just log something (later connect to API)
-    console.log("Login form submitted");
+  const handleLogin = async (formData) => {
+    try {
+      const res = await api.post("/auth/login", {
+        username: formData["Username"],
+        password: formData["Password"],
+      });
+      localStorage.setItem("token", res.data.token); // Save JWT
+      alert("Login successful!");
+    } catch (err) {
+      alert(err.response?.data?.msg || "Login failed");
+    }
   };
 
   return (
