@@ -26,7 +26,7 @@ function Home() {
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <span className="text-2xl text-white">💰</span>
           </div>
-          <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">FinanceApp</h1>
+          <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Personal Finance Dashboard</h1>
         </div>
 
         {/* Main Heading */}
@@ -43,7 +43,7 @@ function Home() {
 
         {/* Description */}
         <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl">
-          FinanceApp helps you track expenses, manage budgets, and visualize your financial health 
+          Personal Finance Dashboard helps you track expenses, manage budgets, and visualize your financial health
           with intuitive tools and beautiful dashboards. Start your journey to financial freedom today.
         </p>
 

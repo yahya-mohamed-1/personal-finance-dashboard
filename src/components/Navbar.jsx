@@ -66,7 +66,7 @@ function Navbar() {
           
           {/* Brand / Logo */}
           <Link to="/" className="text-xl font-bold">
-            💰 FinanceApp
+            💰 Personal Finance Dashboard
           </Link>
 
           {/* Desktop menu */}
