@@ -38,7 +38,6 @@ function Home() {
         <div className="h-12 mb-6 flex items-center justify-center">
           <p className="text-xl md:text-2xl text-blue-700 dark:text-blue-300 font-medium">
             {displayText}
-            <span className="ml-1 inline-block h-8 w-0.5 bg-blue-600 animate-pulse"></span>
           </p>
         </div>
 
