@@ -7,9 +7,8 @@ from datetime import datetime
 finance_bp = Blueprint("finance", __name__)
 
 @finance_bp.route("/add", methods=["POST"])
-@jwt_required()
 def add_transaction():
-    user_id = get_jwt_identity()
+    user_id = 1  # For testing, use user_id = 1
     data = request.get_json() or {}
 
     # parse date if provided (expecting YYYY-MM-DD)
@@ -34,9 +33,8 @@ def add_transaction():
     return jsonify({"msg": "Transaction added", "transaction": txn.to_dict()}), 201
 
 @finance_bp.route("/history", methods=["GET"])
-@jwt_required()
 def get_history():
-    user_id = get_jwt_identity()
+    user_id = 1  # For testing, use user_id = 1
     txns = Transaction.query.filter_by(user_id=user_id).order_by(Transaction.date.desc().nullslast()).all()
     return jsonify({"transactions": [t.to_dict() for t in txns]}), 200
 
