@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
+  const [message, setMessage] = React.useState("");
+  const [messageType, setMessageType] = React.useState("");
 
   const handleLogin = async (formData) => {
     try {
@@ -15,10 +17,12 @@ function Login() {
       localStorage.setItem("token", res.data.token); // Save JWT
       // notify other components (Navbar) about auth change
       window.dispatchEvent(new CustomEvent("authChange", { detail: { loggedIn: true } }));
-      alert("Login successful!");
-      navigate("/dashboard");
+      setMessage("Login successful!");
+      setMessageType("success");
+      setTimeout(() => navigate("/dashboard"), 600);
     } catch (err) {
-      alert(err.response?.data?.msg || "Login failed");
+      setMessage(err.response?.data?.msg || "Login failed");
+      setMessageType("error");
     }
   };
 
@@ -37,6 +41,8 @@ function Login() {
       footerLink2="/reset-password"
       footerLinkText2="Reset Password"
       onSubmit={handleLogin}
+      message={message}
+      messageType={messageType}
     />
   );
 }

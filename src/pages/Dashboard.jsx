@@ -33,39 +33,157 @@ function Dashboard() {
       const txs = res.data.transactions;
 
       // group by month for chart
+      // Build grouped data keyed by Month/Year (e.g., Sep/2025)
       const grouped = txs.reduce((acc, tx) => {
-        const { month, type, amount } = tx;
-        if (!acc[month]) {
-          acc[month] = { month, income: 0, expenses: 0 };
+        // prefer server-provided month (now stored as 'Mon/YYYY'), otherwise derive from date
+        let m = tx.month;
+        if (!m && tx.date) {
+          try {
+            const d = new Date(tx.date);
+            m = d.toLocaleString("en-US", { month: "short" }) + "/" + d.getFullYear();
+          } catch (e) {
+            m = "Unknown";
+          }
         }
-        if (type === "income") {
-          acc[month].income += amount;
+        if (!m) m = "Unknown";
+        if (!acc[m]) {
+          acc[m] = { month: m, income: 0, expenses: 0 };
+        }
+        if (tx.type === "income") {
+          acc[m].income += tx.amount;
         } else {
-          acc[month].expenses += amount;
+          acc[m].expenses += tx.amount;
         }
         return acc;
       }, {});
 
+      const groupedArray = Object.values(grouped);
+
+      // sort chronologically by year then month index
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      groupedArray.sort((a,b) => {
+        const parseMy = (s) => {
+          if (!s || s === 'Unknown') return { y: 0, m: -1 };
+          const parts = s.split('/');
+          if (parts.length === 2) {
+            const mon = parts[0];
+            const yr = parseInt(parts[1],10) || 0;
+            return { y: yr, m: monthNames.indexOf(mon) };
+          }
+          return { y: 0, m: monthNames.indexOf(s) };
+        };
+        const A = parseMy(a.month);
+        const B = parseMy(b.month);
+        if (A.y !== B.y) return A.y - B.y;
+        return A.m - B.m;
+      });
+
       setTransactions(txs);
-      setData(Object.values(grouped));
+      setData(groupedArray);
     } catch (err) {
       console.error("Failed to load history:", err);
     }
   };
 
   // 🔹 Add new transaction via backend
-  const handleAddTransaction = async ({ amount, type, month, category }) => {
+  const handleAddTransaction = async ({ amount, type, date, category }) => {
     try {
       await api.post("/finance/add", {
         amount,
         type,
-        month,
+        date,
         category,
       });
       fetchHistory(); // refresh after add
     } catch (err) {
       console.error("Failed to add transaction:", err);
     }
+  };
+
+  const handleDeleteLocal = (id) => {
+    // remove from transactions state
+    const remaining = transactions.filter((t) => t.id !== id);
+    setTransactions(remaining);
+
+    // recompute grouped data for charts
+    const grouped = remaining.reduce((acc, tx) => {
+      let m = tx.month;
+      if (!m && tx.date) {
+        try {
+          const d = new Date(tx.date);
+          m = d.toLocaleString("en-US", { month: "short" }) + "/" + d.getFullYear();
+        } catch (e) {
+          m = "Unknown";
+        }
+      }
+      if (!m) m = "Unknown";
+      if (!acc[m]) acc[m] = { month: m, income: 0, expenses: 0 };
+      if (tx.type === "income") acc[m].income += tx.amount;
+      else acc[m].expenses += tx.amount;
+      return acc;
+    }, {});
+    const groupedArray = Object.values(grouped);
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    groupedArray.sort((a,b) => {
+      const parseMy = (s) => {
+        if (!s || s === 'Unknown') return { y: 0, m: -1 };
+        const parts = s.split('/');
+        if (parts.length === 2) {
+          const mon = parts[0];
+          const yr = parseInt(parts[1],10) || 0;
+          return { y: yr, m: monthNames.indexOf(mon) };
+        }
+        return { y: 0, m: monthNames.indexOf(s) };
+      };
+      const A = parseMy(a.month);
+      const B = parseMy(b.month);
+      if (A.y !== B.y) return A.y - B.y;
+      return A.m - B.m;
+    });
+    setData(groupedArray);
+  };
+
+  const handleUpdateLocal = (updated) => {
+    // update transactions state
+    const updatedList = transactions.map((t) => (t.id === updated.id ? { ...t, ...updated } : t));
+    setTransactions(updatedList);
+
+    // recompute grouped data
+    const grouped = updatedList.reduce((acc, tx) => {
+      let m = tx.month;
+      if (!m && tx.date) {
+        try {
+          const d = new Date(tx.date);
+          m = d.toLocaleString("en-US", { month: "short" }) + "/" + d.getFullYear();
+        } catch (e) {
+          m = "Unknown";
+        }
+      }
+      if (!m) m = "Unknown";
+      if (!acc[m]) acc[m] = { month: m, income: 0, expenses: 0 };
+      if (tx.type === "income") acc[m].income += tx.amount;
+      else acc[m].expenses += tx.amount;
+      return acc;
+    }, {});
+    const groupedArray = Object.values(grouped);
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    groupedArray.sort((a,b) => {
+      const parseMy = (s) => {
+        if (!s || s === 'Unknown') return { y: 0, m: -1 };
+        const parts = s.split('/');
+        if (parts.length === 2) {
+          const mon = parts[0];
+          const yr = parseInt(parts[1],10) || 0;
+          return { y: yr, m: monthNames.indexOf(mon) };
+        }
+        return { y: 0, m: monthNames.indexOf(s) };
+      };
+      const A = parseMy(a.month);
+      const B = parseMy(b.month);
+      if (A.y !== B.y) return A.y - B.y;
+      return A.m - B.m;
+    });
+    setData(groupedArray);
   };
 
   return (
@@ -101,7 +219,7 @@ function Dashboard() {
 
       {/* Conditional rendering */}
       {showHistory ? (
-        <TransactionHistory transactions={transactions} />
+  <TransactionHistory transactions={transactions} onDelete={handleDeleteLocal} onUpdate={handleUpdateLocal} />
       ) : (
         <>
           {/* Summary Cards */}

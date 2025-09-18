@@ -6,6 +6,8 @@ import api from "../api";
 function ResetPassword() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const [message, setMessage] = React.useState("");
+  const [messageType, setMessageType] = React.useState("");
 
   const handleResetRequest = async (formData) => {
     try {
@@ -13,9 +15,11 @@ function ResetPassword() {
         email: formData["Email"],
         frontend_url: window.location.origin,
       });
-      alert(res.data.msg || "Password reset link sent!");
+      setMessage(res.data.msg || "Password reset link sent!");
+      setMessageType("success");
     } catch (err) {
-      alert(err.response?.data?.msg || "Reset request failed");
+      setMessage(err.response?.data?.msg || "Reset request failed");
+      setMessageType("error");
     }
   };
 
@@ -24,11 +28,12 @@ function ResetPassword() {
       const res = await api.post(`/auth/reset-password/${token}`, {
         password: formData["New Password"],
       });
-      alert(res.data.msg || "Password reset successfully!");
-      // Redirect to login after successful reset
-      window.location.href = "/login";
+      setMessage(res.data.msg || "Password reset successfully!");
+      setMessageType("success");
+      setTimeout(() => (window.location.href = "/login"), 900);
     } catch (err) {
-      alert(err.response?.data?.msg || "Password reset failed");
+      setMessage(err.response?.data?.msg || "Password reset failed");
+      setMessageType("error");
     }
   };
 
@@ -45,6 +50,8 @@ function ResetPassword() {
         footerLink="/login"
         footerLinkText="Login"
         onSubmit={handlePasswordReset}
+        message={message}
+        messageType={messageType}
       />
     );
   }
@@ -61,6 +68,8 @@ function ResetPassword() {
       footerLink="/login"
       footerLinkText="Login"
       onSubmit={handleResetRequest}
+      message={message}
+      messageType={messageType}
     />
   );
 }

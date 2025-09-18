@@ -76,7 +76,7 @@ function Navbar() {
             </Link>
             {isLoggedIn ? (
               <>
-                <Link to="/" className="hover:text-gray-200 dark:hover:text-gray-300">
+                <Link to="/dashboard" className="hover:text-gray-200 dark:hover:text-gray-300">
                   Dashboard
                 </Link>
                 <button onClick={handleLogout} className="hover:text-gray-200 dark:hover:text-gray-300 focus:outline-none">
@@ -232,7 +232,7 @@ function Navbar() {
           {isLoggedIn ? (
             <>
               <Link
-                to="/"
+                to="/dashboard"
                 className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
                 onClick={() => setIsOpen(false)}
               >

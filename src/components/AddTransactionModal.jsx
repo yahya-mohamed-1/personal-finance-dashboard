@@ -7,7 +7,7 @@ import React, { useState } from "react";
 function AddTransactionModal({ isOpen, onClose, onAdd }) {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("income");
-  const [month, setMonth] = useState("Jan");
+  const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
 
   const handleSubmit = (e) => {
@@ -19,7 +19,8 @@ function AddTransactionModal({ isOpen, onClose, onAdd }) {
       return;
     }
 
-    onAdd({ amount: value, type, month, category });
+  // send ISO date string (YYYY-MM-DD) if provided; backend will infer month when missing
+  onAdd({ amount: value, type, date: date || null, category });
     setAmount("");
     setCategory("");
     onClose(); // close modal after submit
@@ -52,18 +53,13 @@ function AddTransactionModal({ isOpen, onClose, onAdd }) {
             <option value="expenses">Expense</option>
           </select>
 
-          {/* Month */}
-          <select
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
+          {/* Date */}
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-200 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-500"
-          >
-            {["Jan", "Feb", "Mar", "Apr"].map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
+          />
 
           {/* Category */}
           <input

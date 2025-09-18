@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from models import Transaction
 from datetime import datetime
+from datetime import date as date_cls
 
 finance_bp = Blueprint("finance", __name__)
 
@@ -18,7 +19,10 @@ def add_transaction():
         try:
             txn_date = datetime.fromisoformat(date_str).date()
         except Exception:
-            txn_date = None
+            return jsonify({"msg": "Invalid date format. Use YYYY-MM-DD."}), 400
+    # if no date provided, default to today
+    if not txn_date:
+        txn_date = date_cls.today()
 
     txn = Transaction(
         user_id=user_id,
@@ -26,7 +30,8 @@ def add_transaction():
         type=data.get("type", "expenses"),
         category=data.get("category", "General"),
         date=txn_date,
-        month=data.get("month")
+        # store month as Month/Year (e.g., Sep/2025) derived from date when possible
+        month=data.get("month") or txn_date.strftime("%b/%Y")
     )
     db.session.add(txn)
     db.session.commit()

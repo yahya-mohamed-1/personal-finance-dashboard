@@ -3,6 +3,9 @@ import AuthForm from "../components/AuthForm";
 import api from "../api";
 
 function Register() {
+  const [message, setMessage] = React.useState("");
+  const [messageType, setMessageType] = React.useState("");
+
   const handleRegister = async (formData) => {
     try {
       const res = await api.post("/auth/register", {
@@ -11,9 +14,11 @@ function Register() {
         email: formData["Email"],
         password: formData["Password"],
       });
-      alert(res.data.msg || "Registered successfully!");
+      setMessage(res.data.msg || "Registered successfully!");
+      setMessageType("success");
     } catch (err) {
-      alert(err.response?.data?.msg || "Registration failed");
+      setMessage(err.response?.data?.msg || "Registration failed");
+      setMessageType("error");
     }
   };
 
@@ -31,6 +36,8 @@ function Register() {
       footerLink="/login"
       footerLinkText="Login"
       onSubmit={handleRegister}
+      message={message}
+      messageType={messageType}
     />
   );
 }

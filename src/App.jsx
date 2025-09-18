@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -33,10 +34,8 @@ function App() {
           </Routes>
         </main>
 
-        {/* Sticky Footer */}
-        <footer className={`fixed bottom-0 w-full bg-blue-600 text-white dark:bg-gray-900 dark:text-gray-100 text-center py-4 z-40 transition-all duration-300`}>
-          <p>&copy; {new Date().getFullYear()} FinanceApp. All rights reserved.</p>
-        </footer>
+        {/* Footer */}
+        <Footer />
       </div>
     </Router>
   );

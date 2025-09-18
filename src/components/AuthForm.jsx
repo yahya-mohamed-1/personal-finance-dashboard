@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 /**
  * A simple, reusable authentication form
  * Props let us control title, button text, fields, and navigation link.
  */
-function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLinkText, footerText2, footerLink2, footerLinkText2, onSubmit }) {
+function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLinkText, footerText2, footerLink2, footerLinkText2, onSubmit, message, messageType }) {
   const [formData, setFormData] = useState({});
+  const [visibleMessage, setVisibleMessage] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    if (message) {
+      setVisibleMessage(true);
+      timer = setTimeout(() => setVisibleMessage(false), 3000);
+    } else {
+      setVisibleMessage(false);
+    }
+    return () => clearTimeout(timer);
+  }, [message]);
 
   const handleChange = (e) => {
     setFormData({
@@ -44,6 +56,12 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
           ))}
 
           {/* Submit Button */}
+            {/* Inline message (success or error) */}
+            {message && visibleMessage && (
+              <p className={`text-sm mt-2 text-center ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                {message}
+              </p>
+            )}
           <button
             type="submit"
             className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition"
