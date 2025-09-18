@@ -132,12 +132,12 @@ function TransactionHistory({ transactions, onDelete, onUpdate }) {
     const balance = totalIncome - totalExpenses;
 
     doc.setFontSize(12);
-    doc.setTextColor(0, 128, 0);
-    doc.text(`Total Income: $${totalIncome}`, 14, 30);
-    doc.setTextColor(200, 0, 0);
-    doc.text(`Total Expenses: $${totalExpenses}`, 14, 37);
-    doc.setTextColor(0, 0, 200);
-    doc.text(`Balance: $${balance}`, 14, 44);
+  doc.setTextColor(0, 128, 0);
+  doc.text(`Total Income: Ksh ${totalIncome}`, 14, 30);
+  doc.setTextColor(200, 0, 0);
+  doc.text(`Total Expenses: Ksh ${totalExpenses}`, 14, 37);
+  doc.setTextColor(0, 0, 200);
+  doc.text(`Balance: Ksh ${balance}`, 14, 44);
     doc.setTextColor(0, 0, 0);
 
     const tableColumn = ["Date", "Month", "Category", "Type", "Amount"];
@@ -146,7 +146,7 @@ function TransactionHistory({ transactions, onDelete, onUpdate }) {
       formatMonthYear(t) || "-",
       t.category || "-",
       t.type || "-",
-      `$${t.amount}`,
+          `Ksh ${t.amount}`,
     ]);
     autoTable(doc, {
       head: [tableColumn],
@@ -331,7 +331,7 @@ function TransactionHistory({ transactions, onDelete, onUpdate }) {
                     >
                       {t.type}
                     </td>
-                    <td className="px-4 py-2">${t.amount}</td>
+                    <td className="px-4 py-2">Ksh {t.amount}</td>
                     <td className="px-4 py-2 text-center space-x-2">
                       <button
                         onClick={() => openEdit(t)}

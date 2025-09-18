@@ -188,11 +188,6 @@ function Dashboard() {
 
   return (
     <div className="p-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      {/* Title */}
-      <h1 className="text-3xl font-bold mb-6 text-center md:text-left text-gray-900 dark:text-gray-100">
-        Personal Finance Dashboard
-      </h1>
-
       {/* Action Buttons */}
       <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 mb-8">
         <button
@@ -229,7 +224,7 @@ function Dashboard() {
                 Total Income
               </h2>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                ${data.reduce((acc, cur) => acc + cur.income, 0)}
+                Ksh {data.reduce((acc, cur) => acc + cur.income, 0)}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center transition-colors duration-300">
@@ -237,7 +232,7 @@ function Dashboard() {
                 Total Expenses
               </h2>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                ${data.reduce((acc, cur) => acc + cur.expenses, 0)}
+                Ksh {data.reduce((acc, cur) => acc + cur.expenses, 0)}
               </p>
             </div>
           </div>
