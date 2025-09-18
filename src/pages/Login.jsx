@@ -1,8 +1,11 @@
 import React from "react";
 import AuthForm from "../components/AuthForm";
 import api from "../api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
+
   const handleLogin = async (formData) => {
     try {
       const res = await api.post("/auth/login", {
@@ -10,7 +13,10 @@ function Login() {
         password: formData["Password"],
       });
       localStorage.setItem("token", res.data.token); // Save JWT
+      // notify other components (Navbar) about auth change
+      window.dispatchEvent(new CustomEvent("authChange", { detail: { loggedIn: true } }));
       alert("Login successful!");
+      navigate("/dashboard");
     } catch (err) {
       alert(err.response?.data?.msg || "Login failed");
     }

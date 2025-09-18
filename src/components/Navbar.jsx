@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const navigate = useNavigate();
 
   // Apply dark mode class to <html>
   useEffect(() => {
@@ -25,6 +27,38 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Listen for auth changes (other tabs or app events)
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === "token") {
+        setIsLoggedIn(!!e.newValue);
+      }
+    };
+
+    const handleAuthEvent = (e) => {
+      // custom event with detail { loggedIn: boolean }
+      if (e?.detail && typeof e.detail.loggedIn === "boolean") {
+        setIsLoggedIn(e.detail.loggedIn);
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("authChange", handleAuthEvent);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("authChange", handleAuthEvent);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    // notify other parts of app
+    window.dispatchEvent(new CustomEvent("authChange", { detail: { loggedIn: false } }));
+    // navigate to login and replace history so back button won't return to protected page
+    navigate("/login", { replace: true });
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 bg-blue-600 text-white dark:bg-gray-900 dark:text-gray-100 transition-all duration-300 ${isScrolled ? 'bg-opacity-80' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,14 +72,27 @@ function Navbar() {
           {/* Desktop menu */}
           <div className="hidden sm:flex items-center space-x-6">
             <Link to="/" className="hover:text-gray-200 dark:hover:text-gray-300">
-              Dashboard
+              Home
             </Link>
-            <Link to="/login" className="hover:text-gray-200 dark:hover:text-gray-300">
-              Login
-            </Link>
-            <Link to="/register" className="hover:text-gray-200 dark:hover:text-gray-300">
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link to="/" className="hover:text-gray-200 dark:hover:text-gray-300">
+                  Dashboard
+                </Link>
+                <button onClick={handleLogout} className="hover:text-gray-200 dark:hover:text-gray-300 focus:outline-none">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="hover:text-gray-200 dark:hover:text-gray-300">
+                  Login
+                </Link>
+                <Link to="/register" className="hover:text-gray-200 dark:hover:text-gray-300">
+                  Register
+                </Link>
+              </>
+            )}
             {/* Removed Reset Password link */}
 
             {/* Light/Dark toggle for desktop */}
@@ -180,22 +227,42 @@ function Navbar() {
             className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
             onClick={() => setIsOpen(false)}
           >
-            Dashboard
+            Home
           </Link>
-          <Link
-            to="/login"
-            className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
-            onClick={() => setIsOpen(false)}
-          >
-            Register
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link
+                to="/"
+                className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => { setIsOpen(false); handleLogout(); }}
+                className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300 focus:outline-none"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
+                onClick={() => setIsOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="text-white text-2xl font-semibold hover:text-gray-200 dark:text-gray-100 dark:hover:text-gray-300"
+                onClick={() => setIsOpen(false)}
+              >
+                Register
+              </Link>
+            </>
+          )}
           {/* Removed Reset Password link */}
         </div>
       )}
