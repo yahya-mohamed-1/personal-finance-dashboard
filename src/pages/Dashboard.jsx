@@ -105,15 +105,7 @@ function Dashboard() {
       ) : (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center transition-colors duration-300">
-              <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
-                Monthly Budget
-              </h2>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                $2000
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center transition-colors duration-300">
               <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
                 Total Income
