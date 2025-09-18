@@ -187,7 +187,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    <div className="p-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300 pb-20">
       {/* Action Buttons */}
       <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 mb-8">
         <button
