@@ -317,7 +317,7 @@ function TransactionHistory({ transactions, onDelete, onUpdate }) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="border-t hover:bg-gray-50 transition text-sm"
+                    className="border-t hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm"
                   >
                     <td className="px-4 py-2">{formatDateOnly(t)}</td>
                     <td className="px-4 py-2">{formatMonthYear(t) || "-"}</td>
