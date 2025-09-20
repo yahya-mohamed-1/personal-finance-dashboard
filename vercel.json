@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://your-backend-app.onrender.com/api/$1"
+      "destination": "https://personal-finance-backend-outi.onrender.com/api/$1"
     }
   ]
 }
