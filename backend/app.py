@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from config import Config
+import os
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -11,11 +11,19 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
 
-    # Allow any localhost origin (any port) during development using a regex.
-    # This keeps supports_credentials=True while not restricting to specific dev ports.
-    CORS(app, origins=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$", supports_credentials=True)
+    # Use production config if deployed, otherwise use development config
+    if os.getenv('FLASK_ENV') == 'production':
+        app.config.from_object('config_prod.ProductionConfig')
+        # Allow all origins in production (configure properly for security)
+        CORS(app, supports_credentials=True)
+    else:
+        from config import Config
+        app.config.from_object(Config)
+        # Allow any localhost origin (any port) during development using a regex.
+        # This keeps supports_credentials=True while not restricting to specific dev ports.
+        CORS(app, origins=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$", supports_credentials=True)
+
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
