@@ -8,6 +8,9 @@ A modern, full-stack web application for managing personal finances with user au
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC)
 ![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF)
 
+## 📷 Preview
+<img src="https://github.com/yahya-mohamed-1/personal-finance-dashboard/blob/main/src/assets/images/personal_finance_dashboard.png" width="75%">
+
 ## ✨ Features
 
 - 🔐 **User Authentication**: Secure login, registration, and password reset
