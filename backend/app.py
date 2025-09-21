@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -33,6 +33,11 @@ def create_app():
     from finance import finance_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(finance_bp, url_prefix="/api/finance")
+
+    # Add a root route to avoid 404 on base URL
+    @app.route("/")
+    def root():
+        return jsonify({"message": "Personal Finance Backend API is running."})
 
     return app
 
