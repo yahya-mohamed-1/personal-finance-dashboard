@@ -16,7 +16,7 @@ def create_app():
     if os.getenv('FLASK_ENV') == 'production':
         app.config.from_object('config_prod.ProductionConfig')
         # Allow all origins in production (configure properly for security)
-        CORS(app, supports_credentials=True)
+        CORS(app, origins="*", supports_credentials=True)
     else:
         from config import Config
         app.config.from_object(Config)
