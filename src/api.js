@@ -1,7 +1,10 @@
 import axios from "axios";
 
-// Get API base URL from environment variable or use localhost for development
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000/api";
+// Get API base URL from environment variable or use production backend for production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.PROD 
+    ? "https://personal-finance-backend-outi.onrender.com/api" 
+    : "http://127.0.0.1:5000/api");
 
 // Base Axios instance
 const api = axios.create({
