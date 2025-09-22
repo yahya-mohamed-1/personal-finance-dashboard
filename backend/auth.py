@@ -51,14 +51,14 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"msg": "Invalid credentials"}), 401
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=str(user.id))
     return jsonify({"token": token, "user": {"id": user.id, "username": user.username, "name": user.name}}), 200
 
 @auth_bp.route("/me", methods=["GET"])
 @jwt_required()
 def me():
     user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user = User.query.get(int(user_id))
     if not user:
         return jsonify({"msg": "User not found"}), 404
     return jsonify({"id": user.id, "username": user.username, "name": user.name, "email": user.email})
@@ -140,7 +140,7 @@ def delete_account():
         return jsonify({"msg": "Password is required"}), 400
 
     user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user = User.query.get(int(user_id))
     if not user:
         return jsonify({"msg": "User not found"}), 404
 
@@ -150,7 +150,7 @@ def delete_account():
     try:
         # Delete all transactions first (due to foreign key constraint)
         from models import Transaction
-        Transaction.query.filter_by(user_id=user_id).delete()
+        Transaction.query.filter_by(user_id=int(user_id)).delete()
 
         # Delete the user
         db.session.delete(user)
