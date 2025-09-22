@@ -130,13 +130,9 @@ def reset_password_token(token):
 
     return jsonify({"msg": "Password has been reset successfully"}), 200
 
-@auth_bp.route("/delete-account", methods=["DELETE", "OPTIONS"])
-@jwt_required(optional=True)  # make OPTIONS not fail if no JWT
+@auth_bp.route("/delete-account", methods=["DELETE"])
+@jwt_required()
 def delete_account():
-    if request.method == "OPTIONS":
-        # ✅ Preflight response, no auth check required
-        return "", 200
-
     data = request.get_json() or {}
     password = data.get("password")
 
@@ -164,4 +160,3 @@ def delete_account():
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "Failed to delete account"}), 500
-
