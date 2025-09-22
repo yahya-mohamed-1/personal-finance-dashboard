@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -29,15 +29,6 @@ def create_app():
              expose_headers=["Content-Type", "Authorization"],
              allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Access-Control-Allow-Credentials"],
              methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
-
-        # Add manual CORS headers for additional security in production
-        @app.after_request
-        def after_request(response):
-            response.headers.add('Access-Control-Allow-Origin', 'https://personal-finance-dashboard-livid.vercel.app')
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response
     else:
         from config import Config
         app.config.from_object(Config)
