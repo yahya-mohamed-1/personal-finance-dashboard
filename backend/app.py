@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -15,8 +15,29 @@ def create_app():
     # Use production config if deployed, otherwise use development config
     if os.getenv('FLASK_ENV') == 'production':
         app.config.from_object('config_prod.ProductionConfig')
-        # Allow all origins in production (configure properly for security)
-        CORS(app, origins="*", supports_credentials=True)
+        # Allow specific origins in production for security
+        CORS(app,
+             origins=[
+                 "https://personal-finance-dashboard-livid.vercel.app",
+                 "https://personal-finance-backend-outi.onrender.com",
+                 "http://localhost:5173",
+                 "http://localhost:3000",
+                 "http://127.0.0.1:5173",
+                 "http://127.0.0.1:3000"
+             ],
+             supports_credentials=True,
+             expose_headers=["Content-Type", "Authorization"],
+             allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Access-Control-Allow-Credentials"],
+             methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
+        # Add manual CORS headers for additional security in production
+        @app.after_request
+        def after_request(response):
+            response.headers.add('Access-Control-Allow-Origin', 'https://personal-finance-dashboard-livid.vercel.app')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
     else:
         from config import Config
         app.config.from_object(Config)
