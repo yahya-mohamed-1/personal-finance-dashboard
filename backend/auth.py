@@ -130,29 +130,32 @@ def reset_password_token(token):
 
     return jsonify({"msg": "Password has been reset successfully"}), 200
 
-@auth_bp.route("/delete-account", methods=["DELETE"])
-@jwt_required()
+@auth_bp.route("/delete-account", methods=["DELETE", "OPTIONS"])
+@jwt_required(optional=True)  # allow OPTIONS without token
 def delete_account():
-    data = request.get_json() or {}
-    password = data.get("password")
-
-    if not password:
-        return jsonify({"msg": "Password is required"}), 400
+    if request.method == "OPTIONS":
+        return "", 200
 
     user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({"msg": "Missing or invalid token"}), 401
+
     user = User.query.get(int(user_id))
     if not user:
         return jsonify({"msg": "User not found"}), 404
+
+    data = request.get_json() or {}
+    password = data.get("password")
+    if not password:
+        return jsonify({"msg": "Password is required"}), 400
 
     if not user.check_password(password):
         return jsonify({"msg": "Invalid password"}), 401
 
     try:
-        # Delete all transactions first (due to foreign key constraint)
         from models import Transaction
         Transaction.query.filter_by(user_id=int(user_id)).delete()
 
-        # Delete the user
         db.session.delete(user)
         db.session.commit()
 
@@ -160,3 +163,4 @@ def delete_account():
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "Failed to delete account"}), 500
+
