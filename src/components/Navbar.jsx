@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import DeleteAccountDialog from "./DeleteAccountDialog";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
 
   // Apply dark mode class to <html>
@@ -59,6 +61,13 @@ function Navbar() {
     navigate("/login", { replace: true });
   };
 
+  const handleDeleteSuccess = () => {
+    setShowDeleteDialog(false);
+    // The dialog component already handles logout, so we just close the dialog
+    // and navigate to login page
+    navigate("/login", { replace: true });
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 bg-blue-600 text-white dark:bg-gray-900 dark:text-gray-100 transition-all duration-300 ${isScrolled ? 'bg-opacity-80' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,6 +83,28 @@ function Navbar() {
             <Link to="/" className="hover:text-gray-200 dark:hover:text-gray-300">
               Home
             </Link>
+            {isLoggedIn && (
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors duration-300 focus:outline-none"
+                title="Delete Account"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-red-400 hover:text-red-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            )}
             {isLoggedIn ? (
               <>
                 <Link to="/dashboard" className="hover:text-gray-200 dark:hover:text-gray-300">
@@ -162,6 +193,32 @@ function Navbar() {
           
           {/* Top-right buttons */}
           <div className="absolute top-4 right-4 flex items-center space-x-4">
+            {/* Delete Account button - left of theme toggle */}
+            {isLoggedIn && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowDeleteDialog(true);
+                }}
+                className="text-white dark:text-gray-100 focus:outline-none"
+                title="Delete Account"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-red-400 hover:text-red-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            )}
             {/* Light/Dark toggle - left of X */}
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
@@ -266,6 +323,13 @@ function Navbar() {
           {/* Removed Reset Password link */}
         </div>
       )}
+
+      {/* Delete Account Dialog */}
+      <DeleteAccountDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onSuccess={handleDeleteSuccess}
+      />
     </nav>
   );
 }

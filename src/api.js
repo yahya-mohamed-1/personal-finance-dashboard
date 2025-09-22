@@ -23,4 +23,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Delete account function
+export const deleteAccount = async (password) => {
+  try {
+    const response = await api.delete("/auth/delete-account", {
+      data: { password }
+    });
+    return { success: true, message: response.data.msg };
+  } catch (error) {
+    const message = error.response?.data?.msg || "Failed to delete account";
+    return { success: false, message };
+  }
+};
+
 export default api;
