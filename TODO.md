@@ -1,14 +1,18 @@
-# Production Deployment Fixes
+# Authentication Debugging TODO
 
-## Issues to Fix:
-- [x] Switch from Flask development server to Gunicorn for production
-- [x] Add Gunicorn to requirements.txt
-- [x] Update manage.py to support production mode
-- [x] Update render.yaml to use Gunicorn
-- [ ] Test changes locally
-- [ ] Deploy to Render and verify
+## Issues to Debug:
+1. **API URL Configuration** - Verify backend URL is correct and accessible
+2. **CORS Configuration** - Check if CORS is blocking requests
+3. **Backend Health** - Test if backend is responding properly
+4. **Environment Variables** - Verify all required env vars are set
+5. **Database Connectivity** - Check if database is connected
+6. **Frontend Build Issues** - Verify frontend is building correctly
 
-## Changes Made:
-- Added Gunicorn to requirements.txt
-- Updated manage.py to use Gunicorn in production
-- Updated render.yaml start command
+## Steps to Complete:
+- [ ] Test backend API endpoints directly
+- [ ] Verify CORS configuration matches deployed URLs
+- [ ] Check environment variables on Render
+- [ ] Test frontend API calls with browser dev tools
+- [ ] Fix any configuration issues found
+- [ ] Verify database connectivity
+- [ ] Test authentication flow end-to-end
