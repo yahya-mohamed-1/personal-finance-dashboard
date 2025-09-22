@@ -3,7 +3,7 @@ services:
     name: personal-finance-backend
     env: python
     buildCommand: "cd backend && pip install -r requirements.txt"
-    startCommand: "cd backend && python manage.py"
+    startCommand: "cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
     plan: free
     autoDeploy: false
     healthCheckPath: /api/finance/history
