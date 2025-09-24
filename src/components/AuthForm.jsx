@@ -39,7 +39,7 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">{title}</h1>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 b">
           {fields.map((field, idx) => (
             <div key={idx}>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-100">{field.label}</label>
