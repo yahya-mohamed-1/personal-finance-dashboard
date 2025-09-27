@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
@@ -8,6 +8,28 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 
+// Helper component to conditionally apply layout
+function LayoutWrapper({ children }) {
+  const location = useLocation();
+  const isHomeOrAuthPage = ['/', '/login', '/register', '/reset-password'].includes(location.pathname);
+  
+  if (isHomeOrAuthPage) {
+    // Code 1 layout - centered for authentication pages
+    return (
+      <main className="flex-1 flex items-center justify-center bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+        {children}
+      </main>
+    );
+  } else {
+    // Code 2 layout - full width for other pages
+    return (
+      <main className="flex-1 bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+        {children}
+      </main>
+    );
+  }
+}
+
 function App() {
   return (
     <Router>
@@ -15,8 +37,8 @@ function App() {
         {/* Navbar at top */}
         <Navbar />
 
-        {/* Page content - fixed height calculation */}
-        <main className="flex-1 flex items-center justify-center bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+        {/* Conditionally styled page content */}
+        <LayoutWrapper>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -32,7 +54,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<h1 className="p-6 text-center">404 - Page Not Found</h1>} />
           </Routes>
-        </main>
+        </LayoutWrapper>
 
         {/* Footer */}
         <Footer />
