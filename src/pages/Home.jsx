@@ -46,22 +46,6 @@ function Home() {
           Personal Finance Dashboard helps you track expenses, manage budgets, and visualize your financial health
           with intuitive tools and beautiful dashboards. Start your journey to financial freedom today.
         </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/login"
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
-          >
-            Get Started
-          </Link>
-          <Link
-            to="/register"
-            className="px-6 py-3 bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-700 shadow-lg"
-          >
-            Create Account
-          </Link>
-        </div>
       </div>
     </div>
   );
