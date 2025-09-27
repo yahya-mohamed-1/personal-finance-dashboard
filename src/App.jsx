@@ -15,8 +15,8 @@ function App() {
         {/* Navbar at top */}
         <Navbar />
 
-  {/* Page content */}
-  <main className="flex-1 bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+        {/* Page content - fixed height calculation */}
+        <main className="flex-1 flex items-center justify-center bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route

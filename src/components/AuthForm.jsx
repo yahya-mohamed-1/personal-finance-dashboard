@@ -33,13 +33,13 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+    <div className="flex items-center justify-center py-8 bg-gray-100 dark:bg-gray-900">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mx-4">
         {/* Page Title */}
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">{title}</h1>
+        <h1 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">{title}</h1>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 b">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map((field, idx) => (
             <div key={idx}>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-100">{field.label}</label>
@@ -55,22 +55,23 @@ function AuthForm({ title, buttonText, fields, footerText, footerLink, footerLin
             </div>
           ))}
 
+          {/* Message */}
+          {message && visibleMessage && (
+            <p className={`text-sm mt-2 text-center ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+              {message}
+            </p>
+          )}
+
           {/* Submit Button */}
-            {/* Inline message (success or error) */}
-            {message && visibleMessage && (
-              <p className={`text-sm mt-2 text-center ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-                {message}
-              </p>
-            )}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition"
+            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition mt-4"
           >
             {buttonText}
           </button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer Links */}
         {footerText && (
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
             {footerText}{" "}
